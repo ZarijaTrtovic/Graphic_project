@@ -164,10 +164,16 @@ int main() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
+//    glEnable(GL_CULL_FACE);
+//    glCullFace(GL_BACK);
+//    glFrontFace(GL_CCW);
+//    glEnable(GL_BLEND);
+
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+    Shader planeShader("resources/shaders/planeShader.vs", "resources/shaders/planeShader.fs");
 
     float planeVertices[] = {
             //      vertex           texture        normal
@@ -201,7 +207,9 @@ int main() {
 
     glBindVertexArray(0);
 
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/grass2.jpg").c_str());
+    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/grass1.jpg").c_str());
+    planeShader.use();
+    planeShader.setInt("texture1", 0);
 
     //skybox
     float skyboxVertices[] = {
@@ -252,23 +260,11 @@ int main() {
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
-
     glBindVertexArray(skyboxVAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
-
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-//    vector<std::string> faces {
-//            "resources/textures/skybox/right.jpg",
-//            "resources/textures/skybox/left.jpg",
-//            "resources/textures/skybox/up.jpg",
-//            "resources/textures/skybox/down.jpg",
-//            "resources/textures/skybox/front.jpg",
-//            "resources/textures/skybox/back.jpg"
-//    };
 
     vector<std::string> faces_sky {
             FileSystem::getPath("resources/textures/skybox/px.png"),
@@ -279,9 +275,9 @@ int main() {
             FileSystem::getPath("resources/textures/skybox/nz.png")
     };
 
-    stbi_set_flip_vertically_on_load(false);
+//    stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces_sky);
-    stbi_set_flip_vertically_on_load(true);
+//    stbi_set_flip_vertically_on_load(true);
 
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
@@ -292,6 +288,9 @@ int main() {
     //house model
     Model cottage("resources/objects/old_cottage/scene.gltf");
     cottage.SetShaderTextureNamePrefix("material.");
+
+    Model fountain("resources/objects/stylized_fountain/scene.gltf");
+    fountain.SetShaderTextureNamePrefix("material.");
 
 ////    stbi_set_flip_vertically_on_load(false);
 //    Model court("resources/objects/basketball_court/scene.gltf");
@@ -312,6 +311,11 @@ int main() {
     Model table("resources/objects/metallic_garden_table/scene.gltf");
     table.SetShaderTextureNamePrefix("material.");
 //    stbi_set_flip_vertically_on_load(true);
+
+    planeShader.use();
+    planeShader.setInt("texture1", 0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 
 
     PointLight& pointLight = programState->pointLight;
@@ -348,6 +352,11 @@ int main() {
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+//        glBindVertexArray(planeVAO);
+//        glActiveTexture(GL_TEXTURE0);
+//        glBindTexture(GL_TEXTURE_2D, floorTexture);
+//        planeShader.setMat4("model", model);
+
         // don't forget to enable shader before setting uniforms
         ourShader.use();
         //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
@@ -367,10 +376,12 @@ int main() {
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
+
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,glm::vec3(-10.0,3.245,10.0));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(0.01));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         cottage.Draw(ourShader);
@@ -389,27 +400,31 @@ int main() {
 //        ourShader.setMat4("model", model);
 //        table.Draw(ourShader);
 //
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(-20.0f, 15.0f, -4.0f));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0.0f, 1.0f));
-//        model = glm::scale(model, glm::vec3(0.3));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        trike.Draw(ourShader);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,glm::vec3(-2.0,0.15,3.0));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.03));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        fountain.Draw(ourShader);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(10.0,-1.0,7.0));
+        model = glm::translate(model,glm::vec3(0.0,-1.0,15));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.002));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         chairs.Draw(ourShader);
 
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
-        ourShader.setMat4("model", glm::mat4(1.0f));
+        planeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content//        glDepthMask(GL_FALSE);
         skyboxShader.use();
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix())); // remove translation from the view matrix
         skyboxShader.setMat4("view", view);
@@ -417,14 +432,12 @@ int main() {
         // skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
-
-
-
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+//       glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);  // set depth function back to default
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
