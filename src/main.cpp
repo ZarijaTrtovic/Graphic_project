@@ -174,6 +174,31 @@ int main() {
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader planeShader("resources/shaders/planeShader.vs", "resources/shaders/planeShader.fs");
+    Shader blendingShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
+
+    float transparentVertices[] = {
+            // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+            1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+    vector<glm::vec3> treePositions
+            {
+                    glm::vec3(-1.5f, 0.0f, -0.48f),
+                    glm::vec3( 1.5f, 0.0f, 0.51f),
+                    glm::vec3( 0.0f, 0.0f, 0.7f),
+                    glm::vec3(-0.3f, 0.0f, -2.3f),
+                    glm::vec3 (0.5f, 0.0f, -0.6f),
+                    glm::vec3(-13.5f, -10.8f, -1.5f),
+                    glm::vec3(-6.0f, -10.8f, -6.0f),
+                    glm::vec3(-16.0f, -10.8f, -12.0f),
+            };
+
 
     float planeVertices[] = {
             //      vertex           texture        normal
@@ -190,24 +215,31 @@ int main() {
     unsigned int planeVAO, planeVBO;
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
-
     glBindVertexArray(planeVAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/grass1.jpg").c_str());
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
+
+    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
     planeShader.use();
     planeShader.setInt("texture1", 0);
 
@@ -292,20 +324,10 @@ int main() {
     Model fountain("resources/objects/stylized_fountain/scene.gltf");
     fountain.SetShaderTextureNamePrefix("material.");
 
-////    stbi_set_flip_vertically_on_load(false);
-//    Model court("resources/objects/basketball_court/scene.gltf");
-//    court.SetShaderTextureNamePrefix("material.");
-////    stbi_set_flip_vertically_on_load(true);
-
 //    stbi_set_flip_vertically_on_load(false);
     Model chairs("resources/objects/kids_table_chairs/scene.gltf");
     chairs.SetShaderTextureNamePrefix("material.");
 //    stbi_set_flip_vertically_on_load(true);
-
-////    stbi_set_flip_vertically_on_load(false);
-//    Model trike("resources/objects/kids_trike/scene.gltf");
-//    trike.SetShaderTextureNamePrefix("material.");
-////    stbi_set_flip_vertically_on_load(true);
 
 //    stbi_set_flip_vertically_on_load(false);
     Model table("resources/objects/metallic_garden_table/scene.gltf");
@@ -385,21 +407,7 @@ int main() {
         model = glm::scale(model, glm::vec3(0.01));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         cottage.Draw(ourShader);
-//
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(41.0f, -11.0f, 1.0f));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0.0f, 1.0f));
-//        model = glm::scale(model, glm::vec3(0.1));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        court.Draw(ourShader);
 
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(-30.0f, -8.61f, -7.0f));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0.0f, 1.0f));
-//        model = glm::scale(model, glm::vec3(0.1));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        table.Draw(ourShader);
-//
         model = glm::mat4(1.0f);
         model = glm::translate(model,glm::vec3(-2.0,0.15,3.0));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1, 0.0f, 0.0f));
@@ -413,6 +421,22 @@ int main() {
         model = glm::scale(model, glm::vec3(0.002));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         chairs.Draw(ourShader);
+
+        blendingShader.use();
+        blendingShader.setInt("texture1", 0);
+        blendingShader.setMat4("projection", projection);
+        blendingShader.setMat4("view", view);
+
+        for(int i = 0; i < 8; i++) {
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(0, 1, 0));
+            model = glm::translate(model, treePositions[i]);
+            model = glm::scale(model, glm::vec3(0.8f));
+            blendingShader.use();
+            blendingShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+        glEnable(GL_CULL_FACE);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
