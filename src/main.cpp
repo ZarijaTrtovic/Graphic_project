@@ -164,10 +164,10 @@ int main() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-//    glEnable(GL_CULL_FACE);
-//    glCullFace(GL_BACK);
-//    glFrontFace(GL_CCW);
-//    glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     // build and compile shaders
     // -------------------------
@@ -178,27 +178,14 @@ int main() {
 
     float transparentVertices[] = {
             // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-            0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+            0.0f,  3.0f,  0.0f,  0.0f,  0.0f,
+            0.0f, -3.0f,  0.0f,  0.0f,  1.0f,
+            6.0f, -3.0f,  0.0f,  1.0f,  1.0f,
 
-            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
-            1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+            0.0f,  3.0f,  0.0f,  0.0f,  0.0f,
+            6.0f, -3.0f,  0.0f,  1.0f,  1.0f,
+            6.0f,  3.0f,  0.0f,  1.0f,  0.0f
     };
-
-    vector<glm::vec3> treePositions
-            {
-                    glm::vec3(-1.5f, 0.0f, -0.48f),
-                    glm::vec3( 1.5f, 0.0f, 0.51f),
-                    glm::vec3( 0.0f, 0.0f, 0.7f),
-                    glm::vec3(-0.3f, 0.0f, -2.3f),
-                    glm::vec3 (0.5f, 0.0f, -0.6f),
-                    glm::vec3(-13.5f, -10.8f, -1.5f),
-                    glm::vec3(-6.0f, -10.8f, -6.0f),
-                    glm::vec3(-16.0f, -10.8f, -12.0f),
-            };
-
 
     float planeVertices[] = {
             //      vertex           texture        normal
@@ -211,37 +198,6 @@ int main() {
             50.0f, -1.0f, -50.0f,  2.0f, 2.0f, 0.0f, 1.0f, 0.0f,
             -50.0f, -1.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f
     };
-
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-
-    unsigned int transparentVAO, transparentVBO;
-    glGenVertexArrays(1, &transparentVAO);
-    glGenBuffers(1, &transparentVBO);
-    glBindVertexArray(transparentVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glBindVertexArray(0);
-
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
-
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
-    planeShader.use();
-    planeShader.setInt("texture1", 0);
 
     //skybox
     float skyboxVertices[] = {
@@ -289,6 +245,31 @@ int main() {
             1.0f, -1.0f,  1.0f
     };
 
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
+    unsigned int planeVAO, planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -297,6 +278,24 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
+
+    vector<glm::vec3> treePositions
+            {
+                    glm::vec3(-5.0f, 0.0f, 7.0f),
+                    glm::vec3( 2.0f, 0.0f, 3.0f),
+                    glm::vec3( 0.0f, 0.0f, 10.0f),
+                    glm::vec3(-4.0f, 0.0f, -2.3f),
+                    glm::vec3 (6.0f, 0.0f, -0.6f),
+                    glm::vec3(-13.5f, 0.0f, 5.0f),
+                    glm::vec3(-6.0f, 0.0f, 5.0f),
+                    glm::vec3(-16.0f, 0.0f, -10.0f),
+            };
+
+    planeShader.use();
+    planeShader.setInt("texture1", 0);
 
     vector<std::string> faces_sky {
             FileSystem::getPath("resources/textures/skybox/px.png"),
@@ -427,26 +426,34 @@ int main() {
         blendingShader.setMat4("projection", projection);
         blendingShader.setMat4("view", view);
 
-        for(int i = 0; i < 8; i++) {
+        glDisable(GL_CULL_FACE);
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D, transparentTexture);
+        for (unsigned int i = 0; i < treePositions.size(); i++)
+        {
             model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(0, 1, 0));
             model = glm::translate(model, treePositions[i]);
-            model = glm::scale(model, glm::vec3(0.8f));
-            blendingShader.use();
+            model = glm::rotate(model, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+//            model = glm::scale(model, glm::vec3(2.0));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
         glEnable(GL_CULL_FACE);
 
+//        glEnable(GL_CULL_FACE);
+
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+
+        glDisable(GL_CULL_FACE);
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         planeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
+        glEnable(GL_CULL_FACE);
 
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content//        glDepthMask(GL_FALSE);
         skyboxShader.use();
@@ -599,7 +606,7 @@ unsigned int loadTexture(char const * path)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
