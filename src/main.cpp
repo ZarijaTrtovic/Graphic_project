@@ -142,7 +142,7 @@ int main() {
     }
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);
 
     programState = new ProgramState;
     programState->LoadFromFile("resources/program_state.txt");
@@ -284,14 +284,14 @@ int main() {
 
     vector<glm::vec3> treePositions
             {
-                    glm::vec3(-5.0f, 0.0f, 7.0f),
-                    glm::vec3( 2.0f, 0.0f, 3.0f),
-                    glm::vec3( 0.0f, 0.0f, 10.0f),
-                    glm::vec3(-4.0f, 0.0f, -2.3f),
-                    glm::vec3 (6.0f, 0.0f, -0.6f),
-                    glm::vec3(-13.5f, 0.0f, 5.0f),
-                    glm::vec3(-6.0f, 0.0f, 5.0f),
-                    glm::vec3(-16.0f, 0.0f, -10.0f),
+                    glm::vec3(-5.0f, 1.0f, 30.0f),
+                    glm::vec3( 2.0f, 1.0f, 3.0f),
+                    glm::vec3( 0.0f, 1.0f, 40.0f),
+                    glm::vec3(-4.0f, 1.0f, -2.3f),
+                    glm::vec3 (6.0f, 1.0f, -0.6f),
+                    glm::vec3(-13.5f, 1.0f, 50.0f),
+                    glm::vec3(-6.0f, 1.0f, 60.0f),
+                    glm::vec3(-16.0f, 1.0f, -20.0f),
             };
 
     planeShader.use();
@@ -400,7 +400,7 @@ int main() {
 
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(-10.0,3.245,10.0));
+        model = glm::translate(model,glm::vec3(-10.0,2.25,10.0));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, glm::vec3(0.01));    // it's a bit too big for our scene, so scale it down
@@ -408,14 +408,14 @@ int main() {
         cottage.Draw(ourShader);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(-2.0,0.15,3.0));
+        model = glm::translate(model,glm::vec3(-2.0,-0.8,3.0));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.03));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         fountain.Draw(ourShader);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(0.0,-1.0,15));
+        model = glm::translate(model,glm::vec3(0.0,-2.0,15));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.002));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
@@ -429,18 +429,18 @@ int main() {
         glDisable(GL_CULL_FACE);
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
+        float degrees = 0.0f;
         for (unsigned int i = 0; i < treePositions.size(); i++)
         {
+            degrees += 15.0f;
+
             model = glm::mat4(1.0f);
             model = glm::translate(model, treePositions[i]);
-            model = glm::rotate(model, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-//            model = glm::scale(model, glm::vec3(2.0));
+            model = glm::rotate(model, glm::radians(degrees), glm::vec3(0.0f, 1.0f, 0.0f));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
         glEnable(GL_CULL_FACE);
-
-//        glEnable(GL_CULL_FACE);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
