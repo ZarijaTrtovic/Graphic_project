@@ -171,7 +171,7 @@ int main() {
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+    Shader ourShader("resources/shaders/lightingModel.vs", "resources/shaders/lightingModel.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     Shader planeShader("resources/shaders/planeShader.vs", "resources/shaders/planeShader.fs");
     Shader blendingShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
