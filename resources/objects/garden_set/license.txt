@@ -1,0 +1,11 @@
+Model Information:
+* title:	Garden set
+* source:	https://sketchfab.com/3d-models/garden-set-d7b65635448f403ca22ffd1b27856bff
+* author:	Prudence (https://sketchfab.com/prudence)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Garden set" (https://sketchfab.com/3d-models/garden-set-d7b65635448f403ca22ffd1b27856bff) by Prudence (https://sketchfab.com/prudence) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

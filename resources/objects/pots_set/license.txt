@@ -1,0 +1,11 @@
+Model Information:
+* title:	Clay garden pots set
+* source:	https://sketchfab.com/3d-models/clay-garden-pots-set-64ff23ac3d724e78a486b7b891c12285
+* author:	markuzo (https://sketchfab.com/markuzo)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Clay garden pots set" (https://sketchfab.com/3d-models/clay-garden-pots-set-64ff23ac3d724e78a486b7b891c12285) by markuzo (https://sketchfab.com/markuzo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

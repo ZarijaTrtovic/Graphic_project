@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cottage House
+* source:	https://sketchfab.com/3d-models/cottage-house-400e2536bdd34babbe1624ea020f3d77
+* author:	Amal ks (https://sketchfab.com/amal.ks.12)
+
+Model License:
+* license type:	CC-BY-ND-4.0 (http://creativecommons.org/licenses/by-nd/4.0/)
+* requirements:	Author must be credited. Modified versions can not be distributed. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cottage House" (https://sketchfab.com/3d-models/cottage-house-400e2536bdd34babbe1624ea020f3d77) by Amal ks (https://sketchfab.com/amal.ks.12) licensed under CC-BY-ND-4.0 (http://creativecommons.org/licenses/by-nd/4.0/)
