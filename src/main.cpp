@@ -315,14 +315,14 @@ int main() {
 
     vector<glm::vec3> treePositions
             {
-                    glm::vec3(-5.0f, 1.0f, 30.0f),
+                    glm::vec3(30.0f, 1.0f, 30.0f),
                     glm::vec3( 2.0f, 1.0f, 3.0f),
                     glm::vec3( 0.0f, 1.0f, 40.0f),
                     glm::vec3(-4.0f, 1.0f, -2.3f),
                     glm::vec3 (6.0f, 1.0f, -0.6f),
-                    glm::vec3(-13.5f, 1.0f, 50.0f),
-                    glm::vec3(-6.0f, 1.0f, 60.0f),
-                    glm::vec3(-16.0f, 1.0f, -20.0f),
+                    glm::vec3(20.5f, 1.0f, 20.0f),
+                    glm::vec3(-6.0f, 1.0f, 30.0f),
+                    glm::vec3(16.0f, 1.0f, 0.0f),
             };
 
     vector<std::string> faces_sky {
@@ -497,6 +497,12 @@ int main() {
         blendingShader.setInt("texture1", 0);
         blendingShader.setMat4("projection", projection);
         blendingShader.setMat4("view", view);
+
+        blendingShader.setVec3("dirLight.direction", dirLight.direction);
+        blendingShader.setVec3("dirLight.ambient", dirLight.ambient);
+        blendingShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        blendingShader.setVec3("dirLight.specular", dirLight.specular);
+        blendingShader.setFloat("shininess", 32.0f);
 
         glDisable(GL_CULL_FACE);
         glBindVertexArray(transparentVAO);
