@@ -35,6 +35,7 @@ float* initCubemapVertices(unsigned &size);
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
+//bool blinn = true;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -57,14 +58,39 @@ struct PointLight {
     float quadratic;
 };
 
+//struct SpotLight {
+//    glm::vec3 position;
+//    glm::vec3 direction;
+//    float cutOff;
+//    float outerCutOff;
+//
+//    glm::vec3 ambient;
+//    glm::vec3 diffuse;
+//    glm::vec3 specular;
+//
+//    float constant;
+//    float linear;
+//    float quadratic;
+//
+//};
+
+struct DirLight {
+    glm::vec3 direction;
+
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+};
+
 struct ProgramState {
     glm::vec3 clearColor = glm::vec3(0);
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
     glm::vec3 backpackPosition = glm::vec3(0.0f);
-    float backpackScale = 1.0f;
+    float backpackScale = 0.7f;
     PointLight pointLight;
+    DirLight dirLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
@@ -190,14 +216,14 @@ int main() {
 
     float planeVertices[] = {
             //      vertex           texture        normal
-            50.0f, -1.0f,  50.0f,  2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            -50.0f, -1.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f,
-            -50.0f, -1.0f,  50.0f,  0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            50.0f, -3.0f,  50.0f,  2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            -50.0f, -3.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f,
+            -50.0f, -3.0f,  50.0f,  0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
 
-            50.0f, -1.0f,  50.0f,  2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            50.0f, -1.0f, -50.0f,  2.0f, 2.0f, 0.0f, 1.0f, 0.0f,
-            -50.0f, -1.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f
+            50.0f, -3.0f,  50.0f,  2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            50.0f, -3.0f, -50.0f,  2.0f, 2.0f, 0.0f, 1.0f, 0.0f,
+            -50.0f, -3.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f
     };
 
     //skybox
@@ -270,6 +296,7 @@ int main() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glBindVertexArray(0);
 
     stbi_set_flip_vertically_on_load(false);
     unsigned int skyboxVAO, skyboxVBO;
@@ -282,6 +309,8 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
 
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
+    planeShader.use();
+    planeShader.setInt("texture1", 0);
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
 
     vector<glm::vec3> treePositions
@@ -295,9 +324,6 @@ int main() {
                     glm::vec3(-6.0f, 1.0f, 60.0f),
                     glm::vec3(-16.0f, 1.0f, -20.0f),
             };
-
-    planeShader.use();
-    planeShader.setInt("texture1", 0);
 
     vector<std::string> faces_sky {
             FileSystem::getPath("resources/textures/skybox/px.png"),
@@ -345,6 +371,7 @@ int main() {
     glBindVertexArray(0);
 
 
+    //pointlight
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
     pointLight.ambient = glm::vec3(0.4, 0.4, 0.4);
@@ -355,10 +382,23 @@ int main() {
     pointLight.linear = 0.0f;
     pointLight.quadratic = 0.0f;
 
-
+    //spotlight
+   /* SpotLight spotlight;
+    spotlight.position = programState->camera.Position;
+    spotlight.direction = programState->camera.Front;
+    spotlight.ambient = glm::vec3(0.5f);
+    spotlight.diffuse = glm::vec3(1.5f, 1.5f, 1.5f);
+    spotlight.specular = glm::vec3(0.5f, 0.5f, 0.5f);
+    spotlight.cutOff = glm::cos(glm::radians(8.0f));
+    spotlight.outerCutOff = glm::cos(glm::radians(10.0f));
+    spotlight.constant = 1.0f;
+    spotlight.linear = 0.09f;
+    spotlight.quadratic = 0.032f;*/
 
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    DirLight& dirLight = programState->dirLight;
 
     // render loop
     // -----------
@@ -368,6 +408,11 @@ int main() {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        dirLight.direction = glm::vec3(-1.0f, -9.0f, 1.0f);
+        dirLight.ambient = glm::vec3(0.5f);
+        dirLight.diffuse = glm::vec3(1.20f, 0.70f, 0.70f);
+        dirLight.specular = glm::vec3(0.90f);
 
         // input
         // -----
@@ -386,16 +431,37 @@ int main() {
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-        //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-        ourShader.setVec3("pointLight.position", pointLight.position);
-        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-        ourShader.setVec3("pointLight.specular", pointLight.specular);
-        ourShader.setFloat("pointLight.constant", pointLight.constant);
-        ourShader.setFloat("pointLight.linear", pointLight.linear);
-        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 32.0f);
+        ourShader.setFloat("material.shininess", 16.0f);
+//        ourShader.setInt("blinn", blinn);
+
+//        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+//        ourShader.setVec3("pointLight.position", pointLight.position);
+//        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
+//        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+//        ourShader.setVec3("pointLight.specular", pointLight.specular);
+//        ourShader.setFloat("pointLight.constant", pointLight.constant);
+//        ourShader.setFloat("pointLight.linear", pointLight.linear);
+//        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+//        ourShader.setVec3("viewPosition", programState->camera.Position);
+//        ourShader.setFloat("material.shininess", 32.0f);
+
+        ourShader.setVec3("dirLight.direction", dirLight.direction);
+        ourShader.setVec3("dirLight.ambient", dirLight.ambient);
+        ourShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        ourShader.setVec3("dirLight.specular", dirLight.specular);
+        ourShader.setFloat("shininess", 32.0f);
+
+      /*  ourShader.setVec3("spotLight.position", programState->camera.Position);
+        ourShader.setVec3("spotLight.direction", programState->camera.Front);
+        ourShader.setVec3("spotLight.ambient", spotlight.ambient);
+        ourShader.setVec3("spotLight.diffuse", spotlight.diffuse);
+        ourShader.setVec3("spotLight.specular", spotlight.specular);
+        ourShader.setFloat("spotLight.cutOff", spotlight.cutOff);
+        ourShader.setFloat("spotLight.outerCutOff", spotlight.outerCutOff);
+        ourShader.setFloat("spotLight.constant", spotlight.constant);
+        ourShader.setFloat("spotLight.linear", spotlight.linear);
+        ourShader.setFloat("spotLight.quadratic", spotlight.quadratic);*/
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
@@ -453,10 +519,24 @@ int main() {
         model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
 
+        planeShader.use();
+        model = glm::mat4(1.0f);
+        view = programState->camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        planeShader.setMat4("view", view);
+        planeShader.setMat4("projection", projection);
+
         glDisable(GL_CULL_FACE);
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         planeShader.setMat4("model", model);
+
+        planeShader.setVec3("dirLight.direction", dirLight.direction);
+        planeShader.setVec3("dirLight.ambient", dirLight.ambient);
+        planeShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        planeShader.setVec3("dirLight.specular", dirLight.specular);
+        planeShader.setFloat("shininess", 64.0f);
+        
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
         glEnable(GL_CULL_FACE);
