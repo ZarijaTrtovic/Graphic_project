@@ -29,6 +29,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 unsigned int loadTexture(const char *path);
 unsigned int loadCubemap(vector<std::string> faces);
+float* initCubemapVertices(unsigned &size);
 
 
 // settings
@@ -270,14 +271,15 @@ int main() {
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 
+    stbi_set_flip_vertically_on_load(false);
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
 
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
@@ -310,8 +312,12 @@ int main() {
     unsigned int cubemapTexture = loadCubemap(faces_sky);
 //    stbi_set_flip_vertically_on_load(true);
 
+    unsigned sizeof_cubemapVertices;
+    float* cubemapVertices = initCubemapVertices(sizeof_cubemapVertices);
+
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
+    stbi_set_flip_vertically_on_load(false);
 
 //    Model ballModel("resources/objects/football/scene.gltf");
 //    ballModel.SetShaderTextureNamePrefix("material.");
@@ -455,20 +461,24 @@ int main() {
         glBindVertexArray(0);
         glEnable(GL_CULL_FACE);
 
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content//        glDepthMask(GL_FALSE);
+        //stbi_set_flip_vertically_on_load(false);
+        // draw skybox as last
+        //stbi_set_flip_vertically_on_load(false);
+        // draw skybox as last
+        glDepthFunc(GL_LEQUAL);
         skyboxShader.use();
+
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix())); // remove translation from the view matrix
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
+
         // skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-//       glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);  // set depth function back to default
-//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDepthFunc(GL_LESS); // set depth function back to default
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
@@ -637,7 +647,7 @@ unsigned int loadCubemap(vector<std::string> faces)
         unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
         }
         else
@@ -655,4 +665,55 @@ unsigned int loadCubemap(vector<std::string> faces)
     return textureID;
 }
 
+float* initCubemapVertices(unsigned &size){
+    unsigned numOfVert = 36;
+    unsigned numOfCol = 3;
+
+    size = numOfVert * numOfCol * sizeof(float);
+    auto* vertices = new float[numOfVert * numOfCol]{
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+
+            -1.0f, -1.0f, 1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 1.0f,
+
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f,
+            -1.0f, -1.0f, 1.0f,
+
+            -1.0f, 1.0f, -1.0f,
+            1.0f, 1.0f, -1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f
+    };
+
+    return vertices;
+}
 
