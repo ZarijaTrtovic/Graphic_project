@@ -345,9 +345,6 @@ int main() {
     skyboxShader.setInt("skybox", 0);
     stbi_set_flip_vertically_on_load(false);
 
-//    Model ballModel("resources/objects/football/scene.gltf");
-//    ballModel.SetShaderTextureNamePrefix("material.");
-
     //house model
 //    Model cottage("resources/objects/old_cottage/scene.gltf");
 //    cottage.SetShaderTextureNamePrefix("material.");
@@ -358,37 +355,15 @@ int main() {
     Model fountain("resources/objects/fountain/scene.gltf");
     fountain.SetShaderTextureNamePrefix("material.");
 
-    Model chairs("resources/objects/kids_table_chairs/scene.gltf");
+    Model chairs("resources/objects/chairs/scene.gltf");
     chairs.SetShaderTextureNamePrefix("material.");
-
-    Model garden_set("resources/objects/garden_set/scene.gltf");
-    garden_set.SetShaderTextureNamePrefix("material.");
-
-    Model windmill("resources/windmill/scene.gltf");
-    windmill.SetShaderTextureNamePrefix("material.");
 
     Model village_man("resources/objects/village_man/scene.gltf");
     village_man.SetShaderTextureNamePrefix("material.");
 
-    Model hay("resources/objects/hay/scene.gltf");
-    hay.SetShaderTextureNamePrefix("material.");
-
-    Model garden_cart("resources/objects/garden_cart/scene.gltf");
-    garden_cart.SetShaderTextureNamePrefix("materia l.");
-
-    Model fountain2("resources/objects/fountain2/scene.gltf");
-    fountain2.SetShaderTextureNamePrefix("material.");
-
-    Model garden_house("resources/objects/garden_house/scene.gltf");
-    garden_house.SetShaderTextureNamePrefix("material.");
-
-    Model pots_set("resources/objects/pots_set/scene.gltf");
-    pots_set.SetShaderTextureNamePrefix("material.");
-
-
 //    stbi_set_flip_vertically_on_load(false);
-    Model table("resources/objects/metallic_garden_table/scene.gltf");
-    table.SetShaderTextureNamePrefix("material.");
+    Model swing("resources/objects/swing/scene.gltf");
+    swing.SetShaderTextureNamePrefix("material.");
 //    stbi_set_flip_vertically_on_load(true);
 
     planeShader.use();
@@ -516,16 +491,16 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model,glm::vec3(-10.0,-1.7,10.0));
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(2.3));    // it's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(2.5));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         woodenhouse.Draw(ourShader);
-
+//
 //        model = glm::mat4(1.0f);
 //        model = glm::translate(model,glm::vec3(0.0,-2.0,15));
 //        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
-//        model = glm::scale(model, glm::vec3(3));    // it's a bit too big for our scene, so scale it down
+//        model = glm::scale(model, glm::vec3(0.5));    // it's a bit too big for our scene, so scale it down
 //        ourShader.setMat4("model", model);
-//        chairs.Draw(ourShader);
+//        bench.Draw(ourShader);
 
 //        model = glm::mat4(1.0f);
 //        model = glm::translate(model,glm::vec3(0.0,-2.0,15));
@@ -540,6 +515,20 @@ int main() {
         model = glm::scale(model, glm::vec3(2));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         village_man.Draw(ourShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,glm::vec3(3.0,-2.0,15));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.0017));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        chairs.Draw(ourShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,glm::vec3(-2.0,-2.05,25.0));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.15));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        swing.Draw(ourShader);
 
         blendingShader.use();
         blendingShader.setInt("texture1", 0);
