@@ -510,7 +510,7 @@ int main() {
 //        garden_set.Draw(ourShader);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3(10,0.0,10));
+        model = glm::translate(model,glm::vec3(10,0.0,sin(glfwGetTime()) * 10));
 //        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
