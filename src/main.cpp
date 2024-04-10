@@ -366,6 +366,9 @@ int main() {
     swing.SetShaderTextureNamePrefix("material.");
 //    stbi_set_flip_vertically_on_load(true);
 
+    Model cow("resources/objects/cow/scene.gltf");
+    cow.SetShaderTextureNamePrefix("material.");
+
     planeShader.use();
     planeShader.setInt("texture1", 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -529,6 +532,13 @@ int main() {
         model = glm::scale(model, glm::vec3(0.15));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         swing.Draw(ourShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,glm::vec3(10,-2.0,30));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.2));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        cow.Draw(ourShader);
 
         blendingShader.use();
         blendingShader.setInt("texture1", 0);
