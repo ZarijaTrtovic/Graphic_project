@@ -12,6 +12,7 @@ WASD - Movement
 
 # Implemented
 - Required:
+    - [x] [1-8 week]
     - [x] [Blending, discard]
     - [x] [Advanced lighting]
     - [x] [Face culling]
