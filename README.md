@@ -4,7 +4,7 @@ This is my village on Zlatar Mountain - Akmacici.
 Inspired by Serbian tradition.
 
 # Gallery
-![](gallery/village1.png)
+![](gallery/scena.png)
 <br>
 
 # Controls
