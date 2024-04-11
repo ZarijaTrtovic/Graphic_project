@@ -58,22 +58,6 @@ struct PointLight {
     float quadratic;
 };
 
-//struct SpotLight {
-//    glm::vec3 position;
-//    glm::vec3 direction;
-//    float cutOff;
-//    float outerCutOff;
-//
-//    glm::vec3 ambient;
-//    glm::vec3 diffuse;
-//    glm::vec3 specular;
-//
-//    float constant;
-//    float linear;
-//    float quadratic;
-//
-//};
-
 struct DirLight {
     glm::vec3 direction;
 
@@ -203,6 +187,7 @@ int main() {
     Shader planeShader("resources/shaders/planeShader.vs", "resources/shaders/planeShader.fs");
     Shader blendingShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
 
+    //blending
     float transparentVertices[] = {
             // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
             0.0f,  3.0f,  0.0f,  0.0f,  0.0f,
@@ -214,6 +199,7 @@ int main() {
             6.0f,  3.0f,  0.0f,  1.0f,  0.0f
     };
 
+    //floor
     float planeVertices[] = {
             //      vertex           texture        normal
             50.0f, -3.0f,  50.0f,  2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -309,8 +295,6 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) nullptr);
 
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/plane.png").c_str());
-    planeShader.use();
-    planeShader.setInt("texture1", 0);
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/tree.png").c_str());
 
     vector<glm::vec3> treePositions
@@ -334,9 +318,7 @@ int main() {
             FileSystem::getPath("resources/textures/skybox/nz.png")
     };
 
-//    stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces_sky);
-//    stbi_set_flip_vertically_on_load(true);
 
     unsigned sizeof_cubemapVertices;
     float* cubemapVertices = initCubemapVertices(sizeof_cubemapVertices);
@@ -345,10 +327,15 @@ int main() {
     skyboxShader.setInt("skybox", 0);
     stbi_set_flip_vertically_on_load(false);
 
-    //house model
-//    Model cottage("resources/objects/old_cottage/scene.gltf");
-//    cottage.SetShaderTextureNamePrefix("material.");
+    planeShader.use();
+    planeShader.setInt("texture1", 0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 
+//    planeShader.use();
+//    planeShader.setInt("texture1", 0);
+
+    //models
     Model woodenhouse("resources/objects/wooden_house/scene.gltf");
     woodenhouse.SetShaderTextureNamePrefix("material.");
 
@@ -361,19 +348,11 @@ int main() {
     Model village_man("resources/objects/village_man/scene.gltf");
     village_man.SetShaderTextureNamePrefix("material.");
 
-//    stbi_set_flip_vertically_on_load(false);
     Model swing("resources/objects/swing/scene.gltf");
     swing.SetShaderTextureNamePrefix("material.");
-//    stbi_set_flip_vertically_on_load(true);
 
     Model cow("resources/objects/cow/scene.gltf");
     cow.SetShaderTextureNamePrefix("material.");
-
-    planeShader.use();
-    planeShader.setInt("texture1", 0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-
 
     //pointlight
     PointLight& pointLight = programState->pointLight;
@@ -386,26 +365,9 @@ int main() {
     pointLight.linear = 0.0f;
     pointLight.quadratic = 0.0f;
 
-    //spotlight
-   /* SpotLight spotlight;
-    spotlight.position = programState->camera.Position;
-    spotlight.direction = programState->camera.Front;
-    spotlight.ambient = glm::vec3(0.5f);
-    spotlight.diffuse = glm::vec3(1.5f, 1.5f, 1.5f);
-    spotlight.specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    spotlight.cutOff = glm::cos(glm::radians(8.0f));
-    spotlight.outerCutOff = glm::cos(glm::radians(10.0f));
-    spotlight.constant = 1.0f;
-    spotlight.linear = 0.09f;
-    spotlight.quadratic = 0.032f;*/
-
-    // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     DirLight& dirLight = programState->dirLight;
 
     // render loop
-    // -----------
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
@@ -428,27 +390,9 @@ int main() {
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//        glBindVertexArray(planeVAO);
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, floorTexture);
-//        planeShader.setMat4("model", model);
-
-        // don't forget to enable shader before setting uniforms
         ourShader.use();
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 16.0f);
-//        ourShader.setInt("blinn", blinn);
-
-//        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-//        ourShader.setVec3("pointLight.position", pointLight.position);
-//        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-//        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-//        ourShader.setVec3("pointLight.specular", pointLight.specular);
-//        ourShader.setFloat("pointLight.constant", pointLight.constant);
-//        ourShader.setFloat("pointLight.linear", pointLight.linear);
-//        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-//        ourShader.setVec3("viewPosition", programState->camera.Position);
-//        ourShader.setFloat("material.shininess", 32.0f);
+        ourShader.setFloat("material.shininess", 32.0f);
 
         ourShader.setVec3("dirLight.direction", dirLight.direction);
         ourShader.setVec3("dirLight.ambient", dirLight.ambient);
@@ -456,32 +400,20 @@ int main() {
         ourShader.setVec3("dirLight.specular", dirLight.specular);
         ourShader.setFloat("shininess", 32.0f);
 
-      /*  ourShader.setVec3("spotLight.position", programState->camera.Position);
-        ourShader.setVec3("spotLight.direction", programState->camera.Front);
-        ourShader.setVec3("spotLight.ambient", spotlight.ambient);
-        ourShader.setVec3("spotLight.diffuse", spotlight.diffuse);
-        ourShader.setVec3("spotLight.specular", spotlight.specular);
-        ourShader.setFloat("spotLight.cutOff", spotlight.cutOff);
-        ourShader.setFloat("spotLight.outerCutOff", spotlight.outerCutOff);
-        ourShader.setFloat("spotLight.constant", spotlight.constant);
-        ourShader.setFloat("spotLight.linear", spotlight.linear);
-        ourShader.setFloat("spotLight.quadratic", spotlight.quadratic);*/
+        ourShader.setVec3("pointLight.position", pointLight.position);
+        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
+        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+        ourShader.setVec3("pointLight.specular", pointLight.specular);
+        ourShader.setFloat("pointLight.constant", pointLight.constant);
+        ourShader.setFloat("pointLight.linear", pointLight.linear);
+        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = programState->camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
-
-
-        // render the loaded model
-//        glm::mat4 model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(-10.0,2.25,10.0));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-//        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-//        model = glm::scale(model, glm::vec3(0.01));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        cottage.Draw(ourShader);
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,glm::vec3(-2.0,-1.8,3.0));
@@ -497,24 +429,9 @@ int main() {
         model = glm::scale(model, glm::vec3(2.5));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         woodenhouse.Draw(ourShader);
-//
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(0.0,-2.0,15));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
-//        model = glm::scale(model, glm::vec3(0.5));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        bench.Draw(ourShader);
-
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model,glm::vec3(0.0,-2.0,15));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
-//        model = glm::scale(model, glm::vec3(2));    // it's a bit too big for our scene, so scale it down
-//        ourShader.setMat4("model", model);
-//        garden_set.Draw(ourShader);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model,glm::vec3(10,0.0,sin(glfwGetTime()) * 10));
-//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 1.0f, 0.0f));
         model = glm::scale(model, glm::vec3(2));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         village_man.Draw(ourShader);
